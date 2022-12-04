@@ -1,9 +1,10 @@
 #!/bin/bash
 
-#Variable define
+#Variable declaration
 INPUT_FILE=$1
 TIME_SLICE=0
-QUANTA_VAL=2
+QUANTA_VAL=1
+ISNUM='^[0-9]+$'
 PROCESS_QUEUE=true
 P=() #Process list
 AT=() #Arrival time list
@@ -29,6 +30,20 @@ elif [ ! -f "$INPUT_FILE" ]; then
     printf '\e[91mError:\e[0m %s\n' "$INPUT_FILE does not exist."
 	exit 1
 fi
+
+printf '\e[1m%s\e[0m\n' "Enter the quanta value:"
+printf '\e[0m%s\e[0m\n' "(leave blank to apply the default quanta value 1)"
+read USER_QT
+
+if [ ! -z "$USER_QT" ]; then
+	if [[ $USER_QT =~ $ISNUM ]] ; then
+		QUANTA_VAL=$USER_QT
+	else
+		printf '\e[33m%s\e[0m\n' "Given quanta value is invalid, the default value will be applied."
+	fi
+	
+fi
+
 
 #Get array index function
 function GetIndex(){
