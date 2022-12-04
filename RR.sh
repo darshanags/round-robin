@@ -99,6 +99,7 @@ while [ $PROCESS_QUEUE == true ]; do
 	done
 
 	TEMP_QUEUE=(${QUEUE[@]})
+	NUT_CHECK=0
 
 	for p_idx in ${!P[@]}
 	do
@@ -108,6 +109,9 @@ while [ $PROCESS_QUEUE == true ]; do
 		
 		if [ ${NUT[$p_idx]} == 0 ]; then 
 			isFinished=1
+			else
+
+			NUT_CHECK=${NUT[$p_idx]}
 		fi 
 
 		if [ $IN_QUEUE == 0 ]; then
@@ -134,8 +138,10 @@ while [ $PROCESS_QUEUE == true ]; do
 	
 		done
 	done
+
 	
-	if [ "${#QUEUE[@]}" == 0 ]; then
+	
+	if [[ "${#QUEUE[@]}" == 0 && $NUT_CHECK == 0 ]]; then
 		PROCESS_QUEUE=false
 	fi
 
