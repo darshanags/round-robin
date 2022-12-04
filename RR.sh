@@ -9,6 +9,10 @@ NUT=()
 ADDED=()
 TEMP_QUEUE=()
 
+F="${INPUT_FILE##*/}"
+NAME="${F%.*}"
+OUTPUT_FILE="./$NAME-out.txt"
+
 if [ "$#" == 0 ]; then
 
 	printf '\e[91mError:\e[0m %s\n' "Path to input data file cannot be empty."
@@ -63,12 +67,12 @@ while read line; do
 	ADDED+=("0")
 done < <(sort $INPUT_FILE)
 
-printf '\t%s' ${P[@]}
-printf '%s\n'
+printf '\t%s' ${P[@]} | tee -a $OUTPUT_FILE
+printf '%s\n' | tee -a $OUTPUT_FILE
 
 while [ $PROCESS_QUEUE == true ]; do
 	QUEUE=()
-	printf '%s' $TIME_SLICE
+	printf '%s' $TIME_SLICE | tee -a $OUTPUT_FILE
 	
 	if [ ${#TEMP_QUEUE[@]} -gt 0 ]; then
 	
@@ -94,7 +98,7 @@ while [ $PROCESS_QUEUE == true ]; do
 			NUT[$at_idx]=$((${NUT[$at_idx]}-1))
 
 		elif [[ "${ADDED[$at_idx]}" == 0 && ${AT[$at_idx]} != $TIME_SLICE ]]; then
-			printf '%s'
+			printf '%s' | tee -a $OUTPUT_FILE
 		fi
 	done
 
@@ -116,9 +120,9 @@ while [ $PROCESS_QUEUE == true ]; do
 
 		if [ $IN_QUEUE == 0 ]; then
 			if [ $isFinished == 0 ]; then
-				printf '\t%s' '-'
+				printf '\t%s' '-' | tee -a $OUTPUT_FILE
 			else
-				printf '\t%s' 'F'
+				printf '\t%s' 'F' | tee -a $OUTPUT_FILE
 			fi			
 		fi
 
@@ -127,11 +131,11 @@ while [ $PROCESS_QUEUE == true ]; do
 			if [ ${QUEUE[$q_idx]} == $CURRENT_P ]; then
 
 				if [ $q_idx == 0 ]; then
-					printf '\t%s' 'R'
+					printf '\t%s' 'R' | tee -a $OUTPUT_FILE
 
 					else
 
-					printf '\t%s' 'W'
+					printf '\t%s' 'W' | tee -a $OUTPUT_FILE
 				fi
 			
 			fi
@@ -145,6 +149,6 @@ while [ $PROCESS_QUEUE == true ]; do
 		PROCESS_QUEUE=false
 	fi
 
-	printf '%s\n'
+	printf '%s\n' | tee -a $OUTPUT_FILE
 	let TIME_SLICE++
 done
