@@ -25,19 +25,6 @@ function GetIndex(){
 	echo $RESULT
 }
 
-function Clean(){
-	local ARR_TO_CLEAN=("$@")
-	
-	for index in ${!ARR_TO_CLEAN[@]}
-	do
-		if [ ${ARR_TO_CLEAN[index]} == "-" ]; then
-			unset ARR_TO_CLEAN[$index]
-		fi
-	done
-
-	echo ${ARR_TO_CLEAN[@]}
-}
-
 function inArray(){
 	local STR=$1
 	shift
@@ -62,30 +49,21 @@ printf '%s\n'
 while [ $TIME_SLICE -lt 10 ]; do
 	Q=()
 	printf '%s' $TIME_SLICE
-
-	#Q=(${Q2[@]})
-
-	#unset Q2[0]
-
-	#printf '%s' ${#Q2[@]}
 	
 	if [ ${#Q2[@]} -gt 0 ]; then
-		# for pq_idx in ${!Q2[@]}
-		# do
-		# 	if [ $pq_idx == 0 ]; then
-				IDX0=$(GetIndex ${Q2[0]})
+	
+		IDX0=$(GetIndex ${Q2[0]})
 
-				if [ ${NUT[$IDX0]} -gt 0 ]; then
-					TEMP=${Q2[0]}
-					unset Q2[0]
-					Q=("${Q2[@]}" "$TEMP")
-					NUT[$IDX0]=$((${NUT[$IDX0]}-1))
-				else
-					unset Q2[0]
-					Q=("${Q2[@]}")
-				fi
-		# 	fi
-		# done
+		if [ ${NUT[$IDX0]} -gt 0 ]; then
+			TEMP=${Q2[0]}
+			unset Q2[0]
+			Q=("${Q2[@]}" "$TEMP")
+			NUT[$IDX0]=$((${NUT[$IDX0]}-1))
+		else
+			unset Q2[0]
+			Q=("${Q2[@]}")
+		fi
+				
 	fi
 
 	for at_idx in ${!AT[@]}
@@ -96,15 +74,12 @@ while [ $TIME_SLICE -lt 10 ]; do
 			NUT[$at_idx]=$((${NUT[$at_idx]}-1))
 
 		elif [[ "${ADDED[$at_idx]}" == 0 && ${AT[$at_idx]} != $TIME_SLICE ]]; then
-			#printf '{%s}' ${AT[$at_idx]}
-			#Q+=("-")
 			printf '%s'
 		fi
 	done
 
 	Q2=(${Q[@]})
 
-	#printf '%s' ${Q[@]}
 	for p_idx in ${!P[@]}
 	do
 		CURRENT_P=${P[$p_idx]}
@@ -135,21 +110,11 @@ while [ $TIME_SLICE -lt 10 ]; do
 
 					printf '\t%s' 'W'
 				fi
-				#unset Q2[$q_idx]
-
-				# if [ ${NUT[$p_idx]} -gt 0 ]; then
-				# 	Q2+=(${P[$p_idx]})
-				# 	#NUT[$p_idx]=$((${NUT[$p_idx]}-1))
-				# fi
-
-				# else
-
-				# printf '\t%s' '-'
+			
 			fi
 	
 		done
 	done
-	#printf '\t%s' ${NUT[@]}
 
 	printf '%s\n'
 	let TIME_SLICE++
