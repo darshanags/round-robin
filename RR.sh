@@ -12,13 +12,13 @@ NUT=() #NUT list
 ADDED=() #add flag
 TEMP_QUEUE=() #Temporary process queue
 
-#Get input file name and set output file name
+#Set output file name based on the input file name
 F="${INPUT_FILE##*/}"
 NAME="${F%.*}"
 OUTPUT_FILE="./$NAME-out.txt"
 
 if [ "$#" == 0 ]; then
-	#Print help guidelines if input data is empty.
+	#Print help guidelines if the input data file is empty
 	printf '\e[91mError:\e[0m %s\n' "Path to input data file cannot be empty."
 	printf '\e[32m%s\e[0m ' "Sample usage:"
 	printf '\e[1m%s\e[0m ' "bash ./RR.sh"
@@ -26,13 +26,13 @@ if [ "$#" == 0 ]; then
 	exit 1
 
 elif [ ! -f "$INPUT_FILE" ]; then
-	#Print invalid data file error if file is not exist.
+	#Print file does not exist error if file cannot be found
     printf '\e[91mError:\e[0m %s\n' "$INPUT_FILE does not exist."
 	exit 1
 fi
 
-printf '\e[1m%s\e[0m\n' "Enter the quanta value:"
-printf '\e[0m%s\e[0m\n' "(leave blank to apply the default quanta value 1)"
+printf '\n\e[1m%s\e[0m' "Enter quanta value: "
+#printf '\e[0m%s\e[0m\n' "(leave blank to apply the default quanta value 1)"
 read USER_QT
 
 if [ ! -z "$USER_QT" ]; then
@@ -41,11 +41,15 @@ if [ ! -z "$USER_QT" ]; then
 	else
 		printf '\e[33m%s\e[0m\n' "Given quanta value is invalid, the default value will be applied."
 	fi
-	
+else
+	printf '\n\e[3m%s\e[0m\n\n' "The default quanta value of $QUANTA_VAL will be used."
 fi
 
 
-#Get array index function
+# Output the index of a given element within the given array.
+# @param ELEM - Element to find and return the index of, within the array.
+# @param ARR - The array to search for.
+
 function GetIndex(){
 	local ELEM=$1
 	shift
@@ -80,16 +84,16 @@ function inArray(){
 	echo $RESULT
 }
 
-#Read the input fine and fill data arrays
+#Read input data file and fill arrays
 while read line; do
 	P+=($(echo $line | awk '{print $1}')) #Set process list
 	AT+=($(echo $line | awk '{print $2}')) #Set arrival time list
 	NUT+=($(echo $line | awk '{print $3}')) #Set NUT list
-	ADDED+=("0") #Set add flag
+	ADDED+=("0") #Set add flag to zero
 done < <(sort $INPUT_FILE)
 
 
-#Print header sections
+#Print header section
 printf '\t%s' ${P[@]} | tee -a $OUTPUT_FILE
 printf '%s\n' | tee -a $OUTPUT_FILE
 
