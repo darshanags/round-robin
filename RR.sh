@@ -31,15 +31,15 @@ elif [ ! -f "$INPUT_FILE" ]; then
 	exit 1
 fi
 
+#Get quanta value form user input
 printf '\n\e[1m%s\e[0m' "Enter quanta value: "
-#printf '\e[0m%s\e[0m\n' "(leave blank to apply the default quanta value 1)"
 read USER_QT
 
 if [ ! -z "$USER_QT" ]; then
 	if [[ $USER_QT =~ $ISNUM ]] ; then
 		QUANTA_VAL=$USER_QT
 	else
-		printf '\e[33m%s\e[0m\n' "Given quanta value is invalid, the default value will be applied."
+		printf '\n\e[33m%s\e[0m\n\n' "Given quanta value is invalid, the default value will be applied."
 	fi
 else
 	printf '\n\e[3m%s\e[0m\n\n' "The default quanta value of $QUANTA_VAL will be used."
@@ -67,6 +67,8 @@ function GetIndex(){
 }
 
 #inArray function to check whether a value exists or not
+# @param STR - Element to check whether contains in the array.
+# @param ARR - The array to search for.
 function inArray(){
 	local STR=$1
 	shift
@@ -92,6 +94,10 @@ while read line; do
 	ADDED+=("0") #Set add flag to zero
 done < <(sort $INPUT_FILE)
 
+#Print applied quanta value
+printf '%s\n'
+printf "Applied Quanta value is $QUANTA_VAL" | tee -a $OUTPUT_FILE
+printf '%s\n\n' | tee -a $OUTPUT_FILE
 
 #Print header section
 printf '\t%s' ${P[@]} | tee -a $OUTPUT_FILE
@@ -211,3 +217,5 @@ while [ $PROCESS_QUEUE == true ]; do
 	#Update the TimeSlice
 	let TIME_SLICE++
 done
+
+printf '%s\n' | tee -a $OUTPUT_FILE
